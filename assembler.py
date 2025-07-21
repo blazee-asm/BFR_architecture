@@ -22,6 +22,7 @@ CONVERSIONS = {
     "ret": b"\x4D",
     "inc": b"\x60",
     "dec": b"\x61",
+    "zero": b"\x62",
     "mov": b"\x8C",
     "movq": b"\x8D",
     "movh": b"\x8E",

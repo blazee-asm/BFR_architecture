@@ -139,7 +139,7 @@ while True:
             val = int.from_bytes(ram[pc + 2:pc + 34])
             pc += 34
         elif REGISTERS_64.get(ram[pc + 1]):
-            val = ram[pc + 2:pc + 10]
+            val = int.from_bytes(ram[pc + 2:pc + 10])
             pc += 10
         elif REGISTERS_8.get(ram[pc + 1]):
             val = ram[pc + 2]
@@ -158,6 +158,12 @@ while True:
         pc = addr + origin
     elif opcode == 0x4d:
         pc = int.from_bytes(ret_reg)
+    elif opcode == 0x60:
+        write_to_reg(ram[pc + 1], hex_to_reg_val(ram[pc + 1]) + 1)
+    elif opcode == 0x61:
+        write_to_reg(ram[pc + 1], hex_to_reg_val(ram[pc + 1]) - 1)
+    elif opcode == 0x62:
+        write_to_reg(ram[pc + 1], 0)
     elif opcode == 0x70:
         if REGISTERS_64.get(ram[pc + 2]): addr = hex_to_reg_val(ram[pc + 2])
         else: addr = int.from_bytes(ram[pc + 2:pc + 10])
@@ -165,7 +171,7 @@ while True:
         pc += 3 if REGISTERS_64.get(ram[pc + 2]) else 10
     elif opcode == 0x71:
         addr = hex_to_reg_val(ram[pc + 1])
-        ram[addr] = hex_to_reg_val(ram[pc + 2])
+        ram[addr] = hex_to_reg_val(ram[pc + 2]) & 0xFF
         pc += 3
     elif opcode == 0x86:
         interrupt_id = ram[pc + 1]
