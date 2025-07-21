@@ -133,6 +133,7 @@ with open(inp_file, "rb") as f:
 
 while True:
     opcode = ram[pc]
+    print(f"PC={pc} opcode=0x{opcode:02x}")
     if opcode == 0x4a:
         reg, val = hex_to_reg_val(ram[pc + 1]), 0
         if REGISTERS_256.get(ram[pc + 1]):
@@ -143,7 +144,7 @@ while True:
             pc += 10
         elif REGISTERS_8.get(ram[pc + 1]):
             val = ram[pc + 2]
-            pc += 2
+            pc += 3
         flag = compare_to_flag(reg, val)
     elif opcode == 0x4b:
         addr_bytes = ram[pc + 1:pc + 9]
@@ -181,26 +182,29 @@ while True:
     elif opcode == 0x86:
         interrupt_id = ram[pc + 1]
         if interrupt_id == 0xa0:
-            if registers["i0"].read() == 0x0d: print()
-            elif registers["i0"].read() == 0x08:
-                print("\b \b", end="")
-            else: print(chr(registers["i0"].read()), end="")
+            val = registers["i0"].read()
+            print(f"Printing char: {chr(val) if val >= 32 else repr(val)}")
+            if val == 0x0d: print()
+            elif val == 0x08:
+                print("\b \b", end="", flush=True)
+            else: print(chr(val), end="", flush=True)
         elif interrupt_id == 0xa1:
             print(end="", flush=True)
-            registers["i0"].write(int.from_bytes(msvcrt.getch(), "big"))
-            if registers["i0"].read() == 0xe0 or registers["i0"].read() == 0x00: registers["i1"].write(int.from_bytes(msvcrt.getch(), "big"))
+            registers["i0"].write(int.from_bytes(msvcrt.getch()))
+            val = registers["i0"].read()
+            if val == 0xe0 or val == 0x00:
+                registers["i1"].write(int.from_bytes(msvcrt.getch()))
         elif interrupt_id == 0x4f: os.system("cls")
         pc += 2
     elif opcode == 0x8c:
-        globals()[REGISTERS_8[ram[pc + 1]]] = ram[pc + 2]
+        write_to_reg(ram[pc + 1], ram[pc + 2])
         pc += 3
     elif opcode == 0x8d:
-        val = ram[pc + 2:pc + 10]
-        reg = REGISTERS_64.get(ram[pc + 1])
-        globals()[reg][get_last_hex_digit(ram[pc + 1] - 1)] = val
+        val = int.from_bytes(ram[pc + 2:pc + 10])
+        write_to_reg(ram[pc + 1], val)
         pc += 10
     elif opcode == 0x8e:
-        val = int.from_bytes(ram[pc + 2:pc + 34], "big")
+        val = int.from_bytes(ram[pc + 2:pc + 34])
         reg = REGISTERS_256[ram[pc + 1]]
 
         registers[reg].write(val)
