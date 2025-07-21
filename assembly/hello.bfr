@@ -1,0 +1,11 @@
+org 0x0000000
+
+label start
+int 0xA1
+cmp i1, 0x53
+jmpc 0x02, halt
+int 0xA0
+jmp start
+
+label halt
+hlt
