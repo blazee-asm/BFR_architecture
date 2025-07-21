@@ -150,14 +150,19 @@ while True:
         addr = int.from_bytes(addr_bytes, signed=True)
         ret_reg = int.to_bytes(pc + 9, 8)
         pc = addr + origin
+        continue
     elif opcode == 0x4c:
-        if flag != int.from_bytes(ram[pc + 1]): pc += 10
+        if flag != ram[pc + 1]:
+            pc += 10
+            continue
         addr_bytes = ram[pc + 2:pc + 10]
         addr = int.from_bytes(addr_bytes, signed=True)
         ret_reg = int.to_bytes(pc + 10, 8)
         pc = addr + origin
+        continue
     elif opcode == 0x4d:
         pc = int.from_bytes(ret_reg)
+        continue
     elif opcode == 0x60:
         write_to_reg(ram[pc + 1], hex_to_reg_val(ram[pc + 1]) + 1)
     elif opcode == 0x61:
