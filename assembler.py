@@ -89,6 +89,22 @@ with open(out_file, "wb") as f:
 
         if parts[0] == "label":
             labels[params[0]] = int.to_bytes(pc, 8, "big")
+
+        pc += 1
+        for param in params:
+            if param.startswith("0x"):
+                hex_num = process_hex(param)
+                pc += hex_num[1]
+                f.write(hex_num[0])
+            elif labels.get(param):
+                f.write(labels[param])
+            else:
+                assert REG_SIZES.get(param), f"line:{line_num} Invalid register."
+                num_length = REG_SIZES[param]
+                pc += num_length
+                assert CONVERSIONS.get(param), f"line:{line_num} Invalid operand, not in mnemonic set."
+                f.write(CONVERSIONS[param])
+        
         line_num += 1
     # bytecode pass
     line_num = 1
