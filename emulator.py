@@ -184,11 +184,11 @@ while True:
             if registers["i0"].read() == 0x0d: print()
             elif registers["i0"].read() == 0x08:
                 print("\b \b", end="")
-            else: print(chr(i0), end="")
-        elif interrupt_id == 0xA1:
+            else: print(chr(registers["i0"].read()), end="")
+        elif interrupt_id == 0xa1:
             print(end="", flush=True)
             registers["i0"].write(int.from_bytes(msvcrt.getch(), "big"))
-            if registers["i0"].read() == b"\xe0" or registers["i0"].read() == b"\000": registers["i1"].write(int.from_bytes(msvcrt.getch(), "big"))
+            if registers["i0"].read() == 0xe0 or registers["i0"].read() == 0x00: registers["i1"].write(int.from_bytes(msvcrt.getch(), "big"))
         elif interrupt_id == 0x4f: os.system("cls")
         pc += 2
     elif opcode == 0x8c:
