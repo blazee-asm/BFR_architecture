@@ -181,14 +181,14 @@ while True:
     elif opcode == 0x86:
         interrupt_id = ram[pc + 1]
         if interrupt_id == 0xa0:
-            if i0 == 0x0d: print()
-            elif i0 == 0x08:
+            if registers["i0"].read() == 0x0d: print()
+            elif registers["i0"].read() == 0x08:
                 print("\b \b", end="")
             else: print(chr(i0), end="")
         elif interrupt_id == 0xA1:
             print(end="", flush=True)
-            i0 = int.from_bytes(msvcrt.getch(), "big")
-            if i0 == b"\xe0" or i0 == b"\000": i1 = int.from_bytes(msvcrt.getch(), "big")
+            registers["i0"].write(int.from_bytes(msvcrt.getch(), "big"))
+            if registers["i0"].read() == b"\xe0" or registers["i0"].read() == b"\000": registers["i1"].write(int.from_bytes(msvcrt.getch(), "big"))
         elif interrupt_id == 0x4f: os.system("cls")
         pc += 2
     elif opcode == 0x8c:
