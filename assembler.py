@@ -95,15 +95,11 @@ with open(out_file, "wb") as f:
             if param.startswith("0x"):
                 hex_num = process_hex(param)
                 pc += hex_num[1]
-                f.write(hex_num[0])
             elif labels.get(param):
-                f.write(labels[param])
+                pc += 8
             else:
-                assert REG_SIZES.get(param), f"line:{line_num} Invalid register."
                 num_length = REG_SIZES[param]
                 pc += num_length
-                assert CONVERSIONS.get(param), f"line:{line_num} Invalid operand, not in mnemonic set."
-                f.write(CONVERSIONS[param])
         
         line_num += 1
     # bytecode pass
@@ -128,6 +124,7 @@ with open(out_file, "wb") as f:
                 pc += hex_num[1]
                 f.write(hex_num[0])
             elif labels.get(param):
+                pc += 8
                 f.write(labels[param])
             else:
                 assert REG_SIZES.get(param), f"line:{line_num} Invalid register."
