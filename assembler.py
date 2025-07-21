@@ -80,6 +80,8 @@ with open(inp_file) as f:
 with open(out_file, "wb") as f:
     # label pass
     line_num = 1
+    just_passed_label = False
+    print("Pass #1")
     while 0 <= line_num <= len(code):
         parts = code[line_num - 1].split(" ", 1)
 
@@ -89,21 +91,26 @@ with open(out_file, "wb") as f:
 
         if parts[0] == "label":
             labels[params[0]] = int.to_bytes(pc, 8, "big")
+            just_passed_label = True
+            line_num += 1
+            continue
+        else:
+            just_passed_label = False
 
         pc += 1
         for param in params:
             if param.startswith("0x"):
                 hex_num = process_hex(param)
                 pc += hex_num[1]
-            elif labels.get(param):
-                pc += 8
+            elif param in REG_SIZES:
+                pc += REG_SIZES[param]
             else:
-                num_length = REG_SIZES[param]
-                pc += num_length
+                pc += 8
         
         line_num += 1
     # bytecode pass
-    line_num = 1
+    line_num, pc = 1, 0
+    print("Pass #2")
     while 0 <= line_num <= len(code):
         parts = code[line_num - 1].split(" ", 1)
         instr = parts[0]
