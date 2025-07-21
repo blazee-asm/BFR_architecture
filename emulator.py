@@ -133,7 +133,6 @@ with open(inp_file, "rb") as f:
 
 while True:
     opcode = ram[pc]
-    print(f"PC={pc} opcode=0x{opcode:02x}")
     if opcode == 0x4a:
         reg, val = hex_to_reg_val(ram[pc + 1]), 0
         if REGISTERS_256.get(ram[pc + 1]):
@@ -183,7 +182,6 @@ while True:
         interrupt_id = ram[pc + 1]
         if interrupt_id == 0xa0:
             val = registers["i0"].read()
-            print(f"Printing char: {chr(val) if val >= 32 else repr(val)}")
             if val == 0x0d: print()
             elif val == 0x08:
                 print("\b \b", end="", flush=True)
