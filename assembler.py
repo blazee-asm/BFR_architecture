@@ -78,19 +78,28 @@ with open(inp_file) as f:
     code = [line.strip() for line in f.read().splitlines() if line.strip()]
 
 with open(out_file, "wb") as f:
+    # label pass
+    line_num = 1
+    while 0 <= line_num <= len(code):
+        parts = code[line_num - 1].split(" ", 1)
+
+        params = []
+        if len(parts) > 1:
+            params = parts[1].split(", ")
+
+        if parts[0] == "label":
+            labels[params[0]] = int.to_bytes(pc, 8, "big")
+        line_num += 1
+    # bytecode pass
     line_num = 1
     while 0 <= line_num <= len(code):
         parts = code[line_num - 1].split(" ", 1)
         instr = parts[0]
         assert CONVERSIONS.get(instr), f"line:{line_num} Invalid instruction."
 
-        if instr == "hlt": break
-
         params = []
         if len(parts) > 1:
             params = parts[1].split(", ")
-        if instr == "label":
-            labels[params[0]] = int.to_bytes(pc, 8, "big")
 
         if CONVERSIONS[instr] == b"\x00":
             line_num += 1
