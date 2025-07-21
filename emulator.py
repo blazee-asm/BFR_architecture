@@ -211,6 +211,7 @@ while True:
         reg1, reg2 = REGISTERS_256.get(ram[pc + 1]), REGISTERS_256.get(ram[pc + 2])
         globals()[reg1] = globals()[reg2]
         pc += 3
+    elif opcode == 0xff: break
     
     if pc >= ram_alloc or pc < 0:
         break
